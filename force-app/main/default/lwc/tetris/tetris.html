@@ -1,3 +1,16 @@
 <template>
-    
+  <div class='lufs-div'
+    style="width:100%;height:100%;"
+    onkeyup={handleKeyPress}
+    tabindex="0"
+  >
+    <h3 style="height: 1.5rem;">
+      <template if:true={isGameOver}>Game Over! Score: {score}</template>
+    </h3>
+    <canvas
+      class="lufs-canvas"
+      width="140"
+      height="190"
+    ></canvas>
+  </div>
 </template>
