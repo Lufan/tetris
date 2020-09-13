@@ -9,15 +9,16 @@ const tetraminoHeight = 40;
 export default class Tetris extends LightningElement {
   currentTetramino;
   field = [];
-  gameSpeed  = 400;
+  gameSpeed;
+  minimumGameSpeed  = 500;
+  maximumGameSpeed  = 50;
   isGameOver = false;
   interval;
   score = 0;
   currentAction;
+  isInitialized = false;
 
   handleKeyPress(event) {
-    console.log('handleKeyPress');
-    console.log(event.key);
     let actioResult;
     switch (event.key) {
       case 'Escape':
@@ -50,44 +51,49 @@ export default class Tetris extends LightningElement {
     if (actioResult) {
       this.currentAction = true;
     }
-    console.log(actioResult);
   }
 
   renderedCallback() {
+    if (this.isInitialized) return;
+    this.isInitialized = true;
+
     const canvas = this.template.querySelector('.lufs-canvas');
     if (canvas && canvas.getContext && !this.isGameOver) {
 
       const ctx = canvas.getContext('2d');
       this.drawBoard(ctx);
-      console.log(this.field);
+      this.gameSpeed = this.minimumGameSpeed - 1;
+
       const painter = this.drawSegment.bind(this, ctx);
-      this.interval = setInterval(
-        () => {
-          if (this.isGameOver) {
-            clearInterval(this.interval);
-            return;
-          }
-          if (!this.currentTetramino) {
-            this.currentTetramino = this.createNewTetramino();
-          }
-          if (!this.currentAction) {
-            const actionResult = this.currentTetramino.moveDownIfPossible(this.field);
-            if (!actionResult) {
-              // add current tetramino to the field and generate new one
-              this.currentTetramino.imprintToField(this.field);
-              this.currentTetramino = this.createNewTetramino();
-            }
-          }
-          this.drawField(ctx);
-          this.currentTetramino.draw(painter);
-          this.currentAction = false;
-          //this.checkFilledLines();
-       },
-       this.gameSpeed
-      );
+
+      this.gameLoop(painter, ctx);
+
     } else {
-      console.warn('Canvas not found or not supportet!');
+      console.warn('Game Over or Canvas not found or not supported!');
     }
+  }
+
+  async gameLoop(painter, ctx) {
+    if (this.isGameOver) {
+      return;
+    }
+    if (!this.currentTetramino) {
+      this.currentTetramino = this.createNewTetramino();
+    }
+    if (!this.currentAction) {
+      const actionResult = this.currentTetramino.moveDownIfPossible(this.field);
+      if (!actionResult) {
+        // add current tetramino to the field and generate new one
+        this.currentTetramino.imprintToField(this.field);
+        await this.checkFilledLinesAndScore(ctx);
+        this.currentTetramino = this.createNewTetramino();
+      }
+    }
+    this.drawField(ctx);
+    this.currentTetramino.draw(painter);
+    this.currentAction = false;
+
+    setTimeout(this.gameLoop.bind(this, painter, ctx), this.gameSpeed);
   }
 
   drawField(ctx) {
@@ -120,6 +126,58 @@ export default class Tetris extends LightningElement {
     ctx.fillRect(dx * 10, dy * 10, 10, 10);
     ctx.fillStyle = currentColor;
     ctx.closePath();
+  }
+
+  async checkFilledLinesAndScore(ctx) {
+    if (this.field) {
+      let removedLines = 1;
+      for (let dy = Math.round((fieldHeight - 10) / 10); dy >= 0; dy--) { // from down to up
+        let isFullLine = true;
+        let isContinue = false;
+        for (let dx = 0; dx < fieldWidth / 10; dx++) {
+          isFullLine &= this.field[dx][dy];
+          isContinue |= this.field[dx][dy];
+        }
+        if (isFullLine) {
+          await this.removeLineAndUdateField(dy, ctx);
+          dy++; // if the line is deleted we need to check the current line again because it is overwritten by the line above
+
+          this.score += 10 * (removedLines * removedLines); // more lines removed - more score achieved
+          removedLines++;
+          if (this.gameSpeed > this.maximumGameSpeed) {
+            this.gameSpeed -= 20;
+          }
+        }
+        if (!isContinue) {
+          return;
+        }
+      }
+    }
+  }
+
+  async removeLineAndUdateField(lineNumber, ctx) {
+    for (let dx = 0; dx < fieldWidth / 10; dx++) {
+      this.field[dx][lineNumber] = false;
+    }
+    this.drawField(ctx);
+    return new Promise((resolve) => {
+      setTimeout(
+        () => {
+          for (let dy = lineNumber; dy >= 1; dy--) { // from down to up
+            let isContinue = false;
+            for (let dx = 0; dx < fieldWidth / 10; dx++) {
+              this.field[dx][dy] = this.field[dx][dy - 1];
+              isContinue |= this.field[dx][dy];
+            }
+            if (!isContinue) {
+              break;
+            }
+          }
+          return resolve();
+        },
+        this.gameSpeed
+      );
+    });
   }
 
   createNewTetramino() {
@@ -215,7 +273,6 @@ class Tetramino {
     this.field = TETROMINOS[rndPos];
   }
   draw(painter) {
-    console.log('draw', this.field);
     if (this.field) {
       for (let dx = 0; dx < tetraminoWidth / 10; dx++) {
         for (let dy = 0; dy < tetraminoHeight / 10; dy++) {
@@ -227,7 +284,6 @@ class Tetramino {
     }
   }
   imprintToField(field) {
-    console.log('transferToField', this.field);
     if (this.field) {
       for (let dx = 0; dx < tetraminoWidth / 10; dx++) {
         for (let dy = 0; dy < tetraminoHeight / 10; dy++) {
@@ -255,7 +311,7 @@ class Tetramino {
     let newField = JSON.parse(JSON.stringify(this.field));
     let newX     = this.x;
     let newY     = this.y;
-    console.log('before', JSON.parse(JSON.stringify([newX, newY, newField])));
+
     switch (mode) {
       case 'move-right':
         newX++;
@@ -270,7 +326,7 @@ class Tetramino {
         newField = this.rotateCW(newField);
         break;
     }
-    console.log('after', JSON.parse(JSON.stringify([newX, newY, newField])));
+
     for (let px = 0; px < 4; px++) {
       for (let py = 0; py < 4; py++) {
         if (!newField[px][py]) continue;

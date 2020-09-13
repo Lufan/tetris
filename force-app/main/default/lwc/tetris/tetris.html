@@ -6,6 +6,7 @@
   >
     <h3 style="height: 1.5rem;">
       <template if:true={isGameOver}>Game Over! Score: {score}</template>
+      <template if:false={isGameOver}>Score: {score}</template>
     </h3>
     <canvas
       class="lufs-canvas"

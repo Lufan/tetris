@@ -1333,5 +1333,236 @@
         "component://c/tetris@en-US": {
             "dev": "05cad9041b"
         }
+    },
+    "44d2733d92": {
+        "component://@webruntime/app@en-US": {
+            "dev": "3917909a35"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "c0537eb326"
+        }
+    },
+    "9d14f2a2ae": {
+        "component://@webruntime/app@en-US": {
+            "dev": "204d15eaf3"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "0e4ce68a87"
+        }
+    },
+    "e5ad3342aa": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "d7fe90c0a0"
+        }
+    },
+    "c218567e85": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "83f6ac211a"
+        }
+    },
+    "be88db08df": {
+        "component://@webruntime/app@en-US": {
+            "dev": "3917909a35"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "85d1ae14bc"
+        }
+    },
+    "9b8776b7ea": {
+        "component://@webruntime/app@en-US": {
+            "dev": "3917909a35"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "7b62d0103c"
+        }
+    },
+    "31d634ce68": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "8f18e4bb22"
+        }
+    },
+    "0f528abcb8": {
+        "component://@webruntime/app@en-US": {
+            "dev": "3917909a35"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "551f9cbea1"
+        }
+    },
+    "0e6c46ce12": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "3420b07371"
+        }
+    },
+    "cf02f6a553": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "e5b6038205"
+        }
+    },
+    "08890d80fa": {
+        "component://@webruntime/app@en-US": {
+            "dev": "204d15eaf3"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "27da481419"
+        }
+    },
+    "6ff122c701": {
+        "component://@webruntime/app@en-US": {
+            "dev": "3917909a35"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "46456d917c"
+        }
+    },
+    "735c8cc222": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "d2f9228479"
+        }
+    },
+    "cf6a65065a": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "b4194d20e7"
+        }
+    },
+    "b5545d8555": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "b4194d20e7"
+        }
+    },
+    "a315f7bd3f": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "c1792d3c32"
+        }
+    },
+    "31d0a2aff4": {
+        "component://@webruntime/app@en-US": {
+            "dev": "3917909a35"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "3523dd2de5"
+        }
+    },
+    "5730b78193": {
+        "component://@webruntime/app@en-US": {
+            "dev": "ede600bfef"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "d761399ac6"
+        }
+    },
+    "12a499b38c": {
+        "component://@webruntime/app@en-US": {
+            "dev": "3917909a35"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "703a48b511"
+        }
+    },
+    "10e8ab7bac": {
+        "component://@webruntime/app@en-US": {
+            "dev": "3917909a35"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "51b7df705a"
+        }
+    },
+    "44ce785a83": {
+        "component://@webruntime/app@en-US": {
+            "dev": "204d15eaf3"
+        },
+        "component://localdevserver/preview@en-US": {
+            "dev": "1adcc89400"
+        },
+        "component://c/tetris@en-US": {
+            "dev": "a6dd514a73"
+        }
     }
 }
