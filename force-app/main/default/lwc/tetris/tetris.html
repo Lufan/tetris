@@ -1,17 +1,25 @@
 <template>
   <div class='lufs-div'
-    style="width:100%;height:100%;"
+    style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;"
     onkeyup={handleKeyPress}
     tabindex="0"
   >
-    <h3 style="height: 1.5rem;">
-      <template if:true={isGameOver}>Game Over! Score: {score}</template>
-      <template if:false={isGameOver}>Score: {score}</template>
-    </h3>
     <canvas
-      class="lufs-canvas"
+      class="lufs-data-canvas"
+      width="140"
+      height="30"
+    ></canvas>
+    <canvas
+      class="lufs-field-canvas"
       width="140"
       height="190"
     ></canvas>
+    <lightning-button
+      label={btnLabel}
+      title={btnLabel}
+      icon-name="utility:play"
+      class="slds-var-m-left_x-small"
+      onclick={handleClick}
+    ></lightning-button>
   </div>
 </template>

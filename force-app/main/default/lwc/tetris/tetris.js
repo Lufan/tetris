@@ -1,7 +1,9 @@
+import CnameTarget from '@salesforce/schema/Domain.CnameTarget';
 import { LightningElement } from 'lwc';
 
 const screenWidth     = 140;
 const screenHeight    = 190;
+const tableHeight     = 30;
 const fieldWidth      = 120;
 const fieldHeight     = 180;
 const tetraminoWidth  = 40;
@@ -10,13 +12,17 @@ export default class Tetris extends LightningElement {
   currentTetramino;
   field = [];
   gameSpeed;
-  minimumGameSpeed  = 500;
-  maximumGameSpeed  = 50;
+  storedGameSpeed;
+  minimumGameSpeed = 500;
+  maximumGameSpeed = 100;
+  droupGameSpeed = 25;
   isGameOver = false;
   interval;
   score = 0;
   currentAction;
   isInitialized = false;
+
+  btnLabel = 'Pause';
 
   handleKeyPress(event) {
     let actioResult;
@@ -27,24 +33,26 @@ export default class Tetris extends LightningElement {
       case 'a':
       case 'ArrowLeft':
         if (this.currentTetramino) {
-          actioResult = this.currentTetramino.moveLeftIfPossible(this.field)
+          actioResult = this.currentTetramino.moveLeftIfPossible(this.field);
         }
         break;
       case 'd':
       case 'ArrowRight':
         if (this.currentTetramino) {
-          actioResult = this.currentTetramino.moveRightIfPossible(this.field)
+          actioResult = this.currentTetramino.moveRightIfPossible(this.field);
         }
         break;
       case ' ':
         if (this.currentTetramino) {
-          actioResult = this.currentTetramino.rotateIfPossible(this.field)
+          actioResult = this.currentTetramino.rotateIfPossible(this.field);
         }
         break;
         case 's':
       case 'ArrowDown':
         if (this.currentTetramino) {
-          actioResult = this.currentTetramino.moveDownIfPossible(this.field)
+          actioResult = this.currentTetramino.moveDownIfPossible(this.field);
+          this.storedGameSpeed = this.gameSpeed;
+          this.gameSpeed = this.droupGameSpeed;
         }
         break;
     }
@@ -53,28 +61,51 @@ export default class Tetris extends LightningElement {
     }
   }
 
+  handleClick() {
+    if (this.isGameOver) {
+      this.isInitialized = false;
+      this.isGameOver = false;
+      this.currentTetramino = null;
+      const canvas = this.template.querySelector('.lufs-field-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.translate(-10, 0); // move origin to the 0,0
+      this.field = [];
+      this.renderedCallback();
+      this.btnLabel = 'Pause';
+    } else {
+
+    }
+}
+
   renderedCallback() {
     if (this.isInitialized) return;
     this.isInitialized = true;
 
-    const canvas = this.template.querySelector('.lufs-canvas');
-    if (canvas && canvas.getContext && !this.isGameOver) {
-
+    const canvas = this.template.querySelector('.lufs-field-canvas');
+    const canvasDt = this.template.querySelector('.lufs-data-canvas');
+    if (canvas && canvasDt && canvas.getContext && !this.isGameOver) {
       const ctx = canvas.getContext('2d');
       this.drawBoard(ctx);
       this.gameSpeed = this.minimumGameSpeed - 1;
+      this.score = 0;
 
       const painter = this.drawSegment.bind(this, ctx);
 
-      this.gameLoop(painter, ctx);
+      const ctxDt = canvasDt.getContext('2d');
+
+      this.drawTable(ctxDt);
+      this.updateTable(ctxDt);
+
+      this.gameLoop(painter, ctx, ctxDt);
 
     } else {
       console.warn('Game Over or Canvas not found or not supported!');
     }
   }
 
-  async gameLoop(painter, ctx) {
+  async gameLoop(painter, ctx, ctxDt) {
     if (this.isGameOver) {
+      this.btnLabel = 'Start';
       return;
     }
     if (!this.currentTetramino) {
@@ -83,17 +114,25 @@ export default class Tetris extends LightningElement {
     if (!this.currentAction) {
       const actionResult = this.currentTetramino.moveDownIfPossible(this.field);
       if (!actionResult) {
+        // restore game speed if droup appears
+        if (this.storedGameSpeed) {
+          this.gameSpeed = this.storedGameSpeed;
+          this.storedGameSpeed = null;
+        }
         // add current tetramino to the field and generate new one
         this.currentTetramino.imprintToField(this.field);
-        await this.checkFilledLinesAndScore(ctx);
+        await this.checkFilledLinesUpdateScoreAndSpeed(ctx, ctxDt);
         this.currentTetramino = this.createNewTetramino();
+        if (!this.currentTetramino.ifPossible(this.field)) {
+          this.isGameOver = true;
+        }
       }
     }
     this.drawField(ctx);
     this.currentTetramino.draw(painter);
     this.currentAction = false;
 
-    setTimeout(this.gameLoop.bind(this, painter, ctx), this.gameSpeed);
+    setTimeout(this.gameLoop.bind(this, painter, ctx, ctxDt), this.gameSpeed);
   }
 
   drawField(ctx) {
@@ -110,11 +149,48 @@ export default class Tetris extends LightningElement {
     }
   }
 
+  drawTable(ctx) {
+    const currentFillStyle = ctx.fillStyle;
+    ctx.fillStyle = '#f3f2f2';
+    ctx.fillRect(0, 0, screenWidth, tableHeight);
+    ctx.fillStyle = currentFillStyle;
+    for (let x = 0; x < screenWidth; x += 10) {
+      for (let y = 0; y < tableHeight; y += 10) {
+        this.drawBrick(ctx, x, y);
+      }
+    }
+    ctx.fillStyle = '#f3f2f2';
+    ctx.fillRect(10, 5, screenWidth / 2 - 20, tableHeight - 10);
+    ctx.fillRect(screenWidth / 2 + 10, 5, screenWidth / 2 - 20, tableHeight - 10);
+    ctx.fillStyle = currentFillStyle;
+    ctx.strokeRect(0, 0, screenWidth, tableHeight);
+    ctx.strokeRect(10, 5, screenWidth / 2 - 20, tableHeight - 10);
+    ctx.strokeRect(screenWidth / 2 + 10, 5, screenWidth / 2 - 20, tableHeight - 10);
+    ctx.font = '16px serif';
+    ctx.fillText('S: ', 15, 20);
+    ctx.fillText('V: ', screenWidth / 2 + 15, 20);
+  }
+
+  updateTable(ctx) {
+    ctx.save();
+    ctx.fillStyle = '#f3f2f2'
+    ctx.fillRect(35, 7, screenWidth / 2 - 47, tableHeight - 14);
+    ctx.fillRect(screenWidth / 2 + 35, 7, screenWidth / 2 - 47, tableHeight - 14);
+    ctx.restore();
+
+    ctx.save();
+    ctx.font = '12px serif';
+    ctx.fillText(this.score, 35, 20);
+    const velocity = Math.round(100 * (1 - (this.gameSpeed - this.maximumGameSpeed) / (this.minimumGameSpeed - this.maximumGameSpeed)));
+    ctx.fillText(velocity, screenWidth / 2 + 35, 20);
+    ctx.restore();
+  }
+
   drawSegment(ctx, dx, dy) {
     ctx.beginPath();
     const currentColor = ctx.fillStyle;
     ctx.fillStyle = this.color;
-    ctx.fillRect(dx * 10, dy * 10, 8, 8);
+    ctx.fillRect(dx * 10 + 1, dy * 10 + 1, 8, 8);
     ctx.fillStyle = currentColor;
     ctx.closePath();
   }
@@ -123,12 +199,12 @@ export default class Tetris extends LightningElement {
     ctx.beginPath();
     const currentColor = ctx.fillStyle;
     ctx.fillStyle = 'white';
-    ctx.fillRect(dx * 10, dy * 10, 10, 10);
+    ctx.fillRect(dx * 10 + 1, dy * 10 + 1, 8, 8);
     ctx.fillStyle = currentColor;
     ctx.closePath();
   }
 
-  async checkFilledLinesAndScore(ctx) {
+  async checkFilledLinesUpdateScoreAndSpeed(ctx, ctxDt) {
     if (this.field) {
       let removedLines = 1;
       for (let dy = Math.round((fieldHeight - 10) / 10); dy >= 0; dy--) { // from down to up
@@ -147,6 +223,7 @@ export default class Tetris extends LightningElement {
           if (this.gameSpeed > this.maximumGameSpeed) {
             this.gameSpeed -= 20;
           }
+          this.updateTable(ctxDt);
         }
         if (!isContinue) {
           return;
@@ -181,10 +258,14 @@ export default class Tetris extends LightningElement {
   }
 
   createNewTetramino() {
-    return new Tetramino((screenWidth / 2 - tetraminoWidth / 2) / 10, 0, 0, 0);
+    return new Tetramino((screenWidth / 2 - tetraminoWidth / 2) / 10, 0, 0);
   }
 
   drawBoard(ctx) {
+    const currentFillStyle = ctx.fillStyle;
+    ctx.fillStyle = '#f3f2f2';
+    ctx.fillRect(0, 0, screenWidth, screenHeight);
+    ctx.fillStyle = currentFillStyle;
     ctx.strokeRect(0, 0, screenWidth, screenHeight);
     ctx.strokeRect(10, 0, screenWidth - 20, screenHeight - 10);
     for (let x = 0; x < screenWidth; x += 10) {
@@ -263,7 +344,7 @@ class Tetramino {
   y;
   color;
 
-  constructor(x, y, angle, color) {
+  constructor(x, y, color) {
     this.x = x;
     this.y = y;
     this.color = color;
@@ -307,8 +388,11 @@ class Tetramino {
   rotateIfPossible(field) {
     return this.applyIfPossible(field, 'rotate');
   }
+  ifPossible(field) {
+    return this.applyIfPossible(field, null);
+  }
   applyIfPossible(field, mode) {
-    let newField = JSON.parse(JSON.stringify(this.field));
+    let newField = mode ? JSON.parse(JSON.stringify(this.field)): this.field;
     let newX     = this.x;
     let newY     = this.y;
 
